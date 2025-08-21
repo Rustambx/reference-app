@@ -26,10 +26,12 @@ return new class extends Migration
             $table->timestamps();
             $table->unique(['account']);
         });
+        DB::statement('CREATE EXTENSION IF NOT EXISTS "pgcrypto";');
+        DB::statement('ALTER TABLE treasury_accounts ALTER COLUMN id SET DEFAULT gen_random_uuid();');
+
         DB::statement('CREATE EXTENSION IF NOT EXISTS pg_trgm;');
         DB::statement('CREATE INDEX treasury_accounts_name_trgm ON treasury_accounts USING gin (name gin_trgm_ops);');
         DB::statement('CREATE INDEX treasury_accounts_account_trgm ON treasury_accounts USING gin (account gin_trgm_ops);');
-
     }
 
     /**

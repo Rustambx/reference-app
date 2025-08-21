@@ -27,6 +27,9 @@ return new class extends Migration
 
             $table->timestamps();
         });
+        DB::statement('CREATE EXTENSION IF NOT EXISTS "pgcrypto";');
+        DB::statement('ALTER TABLE budget_holders ALTER COLUMN id SET DEFAULT gen_random_uuid();');
+
         DB::statement('CREATE EXTENSION IF NOT EXISTS pg_trgm;');
         DB::statement('CREATE INDEX budget_holders_name_trgm ON budget_holders USING gin (name gin_trgm_ops);');
         DB::statement('CREATE INDEX budget_holders_tin_trgm ON budget_holders USING gin (tin gin_trgm_ops);');
