@@ -10,23 +10,21 @@ class BudgetHolderService
 {
     public function getPaginated(Request $request): LengthAwarePaginator
     {
-        $perPage   = (int) $request->input('per_page', 20);
-        $sort      = $request->input('sort', 'name');
+        $perPage = (int)$request->input('per_page', 20);
+        $sort = $request->input('sort', 'name');
         $direction = $request->input('direction', 'asc');
-        $search    = trim((string) $request->input('search', ''));
+        $search = trim((string)$request->input('search', ''));
 
         $query = BudgetHolder::query()
-            ->when($request->filled('tin'), fn($q) =>
-            $q->where('tin', strtoupper($request->string('tin')->trim())))
-            ->when($request->filled('name'), fn($q) =>
-            $q->where('name', 'ILIKE', '%'.$request->string('name')->trim().'%'));
+            ->when($request->filled('tin'), fn($q) => $q->where('tin', strtoupper($request->string('tin')->trim())))
+            ->when($request->filled('name'), fn($q) => $q->where('name', 'ILIKE', '%' . $request->string('name')->trim() . '%'));
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
-                $q->where('tin', 'ILIKE', '%'.$search.'%')
-                    ->orWhere('name', 'ILIKE', '%'.$search.'%')
-                    ->orWhere('region', 'ILIKE', '%'.$search.'%')
-                    ->orWhere('phone', 'ILIKE', '%'.$search.'%');
+                $q->where('tin', 'ILIKE', '%' . $search . '%')
+                    ->orWhere('name', 'ILIKE', '%' . $search . '%')
+                    ->orWhere('region', 'ILIKE', '%' . $search . '%')
+                    ->orWhere('phone', 'ILIKE', '%' . $search . '%');
             });
 
             $rankSql = "GREATEST(

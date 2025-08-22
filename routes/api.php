@@ -21,6 +21,9 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::post('/swift/import', [SwiftController::class, 'import']);
+    Route::post('/budget-holders/import', [BudgetHolderController::class, 'import']);
+    Route::post('/treasury-accounts/import', [TreasuryAccountController::class, 'import']);
+
     Route::resource('swift', SwiftController::class);
     Route::resource('budget-holders', BudgetHolderController::class);
     Route::resource('treasury-accounts', TreasuryAccountController::class);

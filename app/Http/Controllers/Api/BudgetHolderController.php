@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Budget\BudgetHolderImportRequest;
 use App\Http\Requests\BudgetHolder\BudgetHolderStoreRequest;
 use App\Http\Requests\BudgetHolder\BudgetHolderUpdateRequest;
 use App\Http\Resources\BudgetHolderResource;
+use App\Imports\BudgetHolderImport;
 use App\Services\BudgetHolderService;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BudgetHolderController extends Controller
 {
@@ -73,5 +76,16 @@ class BudgetHolderController extends Controller
         $this->budgetHolderService->delete($budgetHolder);
 
         return ApiResponse::success([], "Запись успешно удалена");
+    }
+
+    public function import(BudgetHolderImportRequest $request)
+    {
+        $file = $request->file('file');
+
+        Excel::queueImport(new BudgetHolderImport($request->user()->id), $file)
+            ->allOnConnection('rabbitmq')
+            ->allOnQueue('budget_holder');
+
+        return ApiResponse::success([], "Импорт запущен");
     }
 }

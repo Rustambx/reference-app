@@ -11,7 +11,7 @@ class TreasuryAccountStoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class TreasuryAccountStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "account" => "required|string|max:34",
+            "mfo" => "required|string|max:9",
+            "name" => "required",
+            "department" => "required",
+            "currency" => "required|string|max:3",
         ];
     }
 }

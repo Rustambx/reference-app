@@ -11,7 +11,7 @@ class BudgetHolderUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,13 @@ class BudgetHolderUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "tin" => "required",
+            "name" => "required",
+            "region" => "required",
+            "district" => "required",
+            "address" => "required",
+            "phone" => "required",
+            "responsible" => "required"
         ];
     }
 }
