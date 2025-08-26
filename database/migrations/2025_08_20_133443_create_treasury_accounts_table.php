@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('treasury_accounts', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('account', 34);
+            $table->string('account', 34)->unique();
             $table->string('mfo', 9)->index();
             $table->string('name');
             $table->string('department')->nullable();
@@ -24,10 +24,7 @@ return new class extends Migration
             $table->uuid('updated_by')->nullable()->index();
 
             $table->timestamps();
-            $table->unique(['account']);
         });
-        DB::statement('CREATE EXTENSION IF NOT EXISTS "pgcrypto";');
-        DB::statement('ALTER TABLE treasury_accounts ALTER COLUMN id SET DEFAULT gen_random_uuid();');
 
         DB::statement('CREATE EXTENSION IF NOT EXISTS pg_trgm;');
         DB::statement('CREATE INDEX treasury_accounts_name_trgm ON treasury_accounts USING gin (name gin_trgm_ops);');

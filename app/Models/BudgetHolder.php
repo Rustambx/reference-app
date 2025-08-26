@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 class BudgetHolder extends Model
 {
     protected $fillable = [
+        'id',
         'tin',
         'name',
         'region',

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Swift\SwiftImportRequest;
 use App\Http\Requests\Swift\SwiftStoreRequest;
 use App\Http\Requests\Swift\SwiftUpdateRequest;
 use App\Http\Resources\SwiftResource;
@@ -75,7 +76,7 @@ class SwiftController extends Controller
         return ApiResponse::success([], "Запись успешно удалена");
     }
 
-    public function import(Request $request)
+    public function import(SwiftImportRequest $request)
     {
         $file = $request->file('file');
 

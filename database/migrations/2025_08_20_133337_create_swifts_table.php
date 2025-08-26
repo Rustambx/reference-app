@@ -26,11 +26,8 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        DB::statement('CREATE EXTENSION IF NOT EXISTS "pgcrypto";');
-        DB::statement('ALTER TABLE swifts ALTER COLUMN id SET DEFAULT gen_random_uuid();');
         DB::statement('CREATE EXTENSION IF NOT EXISTS pg_trgm;');
         DB::statement('CREATE INDEX swifts_bank_name_trgm ON swifts USING gin (bank_name gin_trgm_ops);');
-        DB::statement('CREATE INDEX swifts_swift_code_trgm ON swifts USING gin (swift_code gin_trgm_ops);');
     }
 
     /**

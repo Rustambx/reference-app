@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Budget\BudgetHolderImportRequest;
+use App\Http\Requests\BudgetHolder\BudgetHolderImportRequest;
 use App\Http\Requests\BudgetHolder\BudgetHolderStoreRequest;
 use App\Http\Requests\BudgetHolder\BudgetHolderUpdateRequest;
 use App\Http\Resources\BudgetHolderResource;

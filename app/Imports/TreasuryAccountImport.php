@@ -5,32 +5,41 @@ namespace App\Imports;
 use App\Models\TreasuryAccount;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\SkipsFailures;
+use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithUpserts;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Validators\Failure;
 
 class TreasuryAccountImport implements
     ToModel,
     WithHeadingRow,
     WithValidation,
     SkipsOnFailure,
+    SKipsOnError,
     WithBatchInserts,
     WithChunkReading,
-    ShouldQueue
+    ShouldQueue,
+    WithUpserts
 {
-    use SkipsFailures, Queueable;
+    use SkipsFailures, SkipsErrors, Queueable;
 
-    public function __construct(private readonly ?string $userId = null){}
+    public function __construct(private readonly ?string $userId = null)
+    {
+    }
 
     public int $tries = 3;
     public int $timeout = 120;
-    private array $seenTreasuryAccount = [];
+
+    private array $seenAccount = [];
 
     public function headingRow(): int
     {
@@ -42,15 +51,12 @@ class TreasuryAccountImport implements
         return [
             'account' => [
                 'bail', 'required', 'string', 'max:34',
-                Rule::unique('treasury_accounts', 'account'),
-                // Проверка на дубликат в текущем CSV
                 function (string $attribute, $value, \Closure $fail) {
-                    $code = strtoupper((string)$value);
-                    if (isset($this->seenTreasuryAccount[$code])) {
+                    if (isset($this->seenAccount[$value])) {
                         $fail('Дубликат Номер счёта в этом файле.');
                         return;
                     }
-                    $this->seenTreasuryAccount[$code] = true;
+                    $this->seenAccount[$value] = true;
                 },
             ],
             'mfo' => 'required',
@@ -64,6 +70,7 @@ class TreasuryAccountImport implements
     {
         return [
             'account.required' => 'Поле account обязательно',
+            'account.string' => 'Поле account должно быть строкой.',
             'mfo.required' => 'Поле mfo обязательно',
             'name.required' => 'Поле name обязательно',
             'department.string' => 'Поле department должно быть строкой.',
@@ -73,9 +80,11 @@ class TreasuryAccountImport implements
 
     public function model(array $row): TreasuryAccount
     {
+        $account = strtoupper((string)($row['account'] ?? ''));
+
         return new TreasuryAccount([
-            'id' => (string) Str::uuid(),
-            'account' => $row['account'],
+            'id' => (string)Str::uuid(),
+            'account' => $account,
             'mfo' => $row['mfo'],
             'name' => $row['name'],
             'department' => $row['department'],
@@ -93,5 +102,29 @@ class TreasuryAccountImport implements
     public function chunkSize(): int
     {
         return 500;
+    }
+
+    public function uniqueBy()
+    {
+        return 'account';
+    }
+
+    public function onFailure(Failure ...$failures)
+    {
+        foreach ($failures as $failure) {
+            Log::warning('Импорт не прошёл валидацию', [
+                'Строка' => $failure->row(),
+                'values' => $failure->values(),
+                'errors' => $failure->errors(),
+            ]);
+        }
+    }
+
+    public function onError(\Throwable $e)
+    {
+        Log::error('Ошибка обработки строки импорта', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ]);
     }
 }

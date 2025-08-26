@@ -19,7 +19,7 @@ class TreasuryAccountService
             ->when($request->filled('account'), fn($q) =>
                 $q->where('account', 'ILIKE', '%' . $request->input('account') . '%'))
             ->when($request->filled('name'), fn($q) =>
-                $q->where('name', 'ILIKE', '%' . $request->input('name')->trim() . '%'));
+                $q->where('name', 'ILIKE', '%' . trim((string)$request->input('name')) . '%'));
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {

@@ -32,8 +32,10 @@ class ApiResponse
         $resource  = $resourceClass::collection($paginator);
         $payload   = $resource->response()->getData(true);
 
+        $messageToShow = $paginator->total() === 0 ? 'Ничего не найдено' : $message;
+
         return response()->json([
-            'message'   => $message,
+            'message'   => $messageToShow,
             'data'      => $payload['data'],
             'links'     => $payload['links'],
             'meta'      => $payload['meta'],

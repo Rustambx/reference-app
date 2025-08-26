@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class TreasuryAccount extends Model
 {
     protected $fillable = [
+        'id',
         'account',
         'mfo',
         'name',
@@ -29,5 +31,19 @@ class TreasuryAccount extends Model
                 $model->{$model->getKeyName()} = (string) Str::uuid();
             }
         });
+    }
+
+    protected function account(): Attribute
+    {
+        return Attribute::make(
+            set: fn($v) => strtoupper(trim((string)$v))
+        );
+    }
+
+    protected function currency(): Attribute
+    {
+        return Attribute::make(
+            set: fn($v) => strtoupper(trim((string)$v))
+        );
     }
 }

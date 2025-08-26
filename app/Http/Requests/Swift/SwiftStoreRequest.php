@@ -14,6 +14,20 @@ class SwiftStoreRequest extends ApiRequest
         return true;
     }
 
+    public function prepareForValidation(): void
+    {
+        $upper = static fn($v) => strtoupper(trim((string) $v));
+        $trim  = static fn($v) => ($v === null) ? null : (trim((string) $v) ?: null);
+
+        $this->merge([
+            'swift_code' => $upper($this->input('swift_code')),
+            'country'    => $upper($this->input('country')),
+            'bank_name'  => $trim($this->input('bank_name')),
+            'city'       => $trim($this->input('city')),
+            'address'    => $trim($this->input('address')),
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *

@@ -3,10 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Exports\TreasuryAccountSampleExport;
-use App\Imports\TreasuryAccountImport;
 use Illuminate\Console\Command;
-use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Excel as ExcelFormat;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ExportTreasuryAccountCsv extends Command
 {

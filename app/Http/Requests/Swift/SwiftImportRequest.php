@@ -43,7 +43,7 @@ class SwiftImportRequest extends FormRequest
             }
 
             $path = $this->file('file')->getRealPath();
-            if (! $path || ! is_readable($path)) {
+            if (!$path || !is_readable($path)) {
                 $v->errors()->add('file', 'Файл недоступен для чтения.');
                 return;
             }
@@ -65,7 +65,7 @@ class SwiftImportRequest extends FormRequest
                 }
             }
 
-            if (! isset($delimiter)) {
+            if (!isset($delimiter)) {
                 $v->errors()->add('file', 'Не удалось определить разделитель CSV (ожидается , или ;).');
                 fclose($fh);
                 return;
@@ -75,7 +75,7 @@ class SwiftImportRequest extends FormRequest
             $normalized = array_map(fn($h) => strtolower(trim((string)$h)), $headers ?? []);
 
             foreach ($expected as $col) {
-                if (! in_array($col, $normalized, true)) {
+                if (!in_array($col, $normalized, true)) {
                     $v->errors()->add('file', "Отсутствует обязательная колонка: {$col}");
                 }
             }

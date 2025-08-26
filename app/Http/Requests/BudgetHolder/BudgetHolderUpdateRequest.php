@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\BudgetHolder;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\ApiRequest;
+use App\Models\BudgetHolder;
 
-class BudgetHolderUpdateRequest extends FormRequest
+class BudgetHolderUpdateRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,14 +22,43 @@ class BudgetHolderUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $routeParam = $this->route('id') ?? $this->route('budget_holder') ?? null;
+        $id = $routeParam instanceof BudgetHolder ? $routeParam->getKey() : $routeParam;
+
         return [
-            "tin" => "required",
+            "tin" => "bail|required|string|max:14|unique:budget_holders,tin," . $id . ",id",
             "name" => "required",
-            "region" => "required",
-            "district" => "required",
-            "address" => "required",
-            "phone" => "required",
-            "responsible" => "required"
+            "region" => "nullable|string|max:120",
+            "district" => "nullable|string|max:120",
+            "address" => "nullable|string",
+            "phone" => "nullable|string|max:50",
+            "responsible" => "nullable|string|max:120"
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'tin.required' => 'Поле tin обязательно',
+            'tin.string'   => 'Поле tin должен быть строкой.',
+            'tin.max'      => 'Поле tin не должен превышать 14 символов.',
+            'tin.unique'   => 'Такой tin уже существует.',
+
+            'name.required' => 'Поле name обязательно',
+
+            'region.string'    => 'Поле region должно быть строкой.',
+            'region.max'       => 'Поле region не должно превышать 120 символов.',
+
+            'district.string'    => 'Поле district должно быть строкой.',
+            'district.max'       => 'Поле district не должно превышать 120 символов.',
+
+            'address.string'    => 'Поле district должно быть строкой.',
+
+            'phone.string'    => 'Поле phone должно быть строкой.',
+            'phone.max'       => 'Поле phone не должно превышать 50 символов.',
+
+            'responsible.string'    => 'Поле responsible должно быть строкой.',
+            'responsible.max'       => 'Поле responsible не должно превышать 120 символов.',
         ];
     }
 }
