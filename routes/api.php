@@ -27,7 +27,4 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::resource('swift', SwiftController::class);
     Route::resource('budget-holders', BudgetHolderController::class);
     Route::resource('treasury-accounts', TreasuryAccountController::class);
-
-
-    Route::get('/test', [TestController::class, 'index']);
 });
